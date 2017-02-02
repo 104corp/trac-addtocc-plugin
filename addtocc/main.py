@@ -19,7 +19,13 @@ class AddToCc(Component):
         if 'preview' in req.args:
             return []
 
-        cc_list = [cc.strip().lower() for cc in ticket._old.get('cc', '').split(',')]
+        # When ticket created, ticket._old.get('cc', '') won't return '',
+        # which will cause .split() failed.
+        cc_old = ticket._old.get('cc')
+        if not cc_old:
+            cc_old = ''
+
+        cc_list = [cc.strip().lower() for cc in cc_old.split(',')]
         username = req.authname.lower()
 
         if username not in cc_list:
